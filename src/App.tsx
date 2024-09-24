@@ -6,6 +6,7 @@ import './App.css';
 function App() {
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     setCode(e.target.value);
@@ -14,6 +15,20 @@ function App() {
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLanguage(e.target.value);
   };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    alert("Code copied to clipboard!");
+  };
+
+  const handleZoom = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold text-center mb-4">Code Highlighter</h1>
@@ -46,11 +61,40 @@ function App() {
       ></textarea>
 
       {/* Display the highlighted code */}
-      <div className="p-4 rounded bg-gray-800 text-white">
+      <div className="p-4 rounded bg-gray-800 text-white relative">
+        <button
+          onClick={handleCopy}
+          className="absolute top-2 right-2 bg-blue-500 text-white p-2 rounded"
+        >
+          Copy Code
+        </button>
+        <button
+          onClick={handleZoom}
+          className="absolute top-2 right-16 bg-green-500 text-white p-2 rounded"
+        >
+          Zoom Code
+        </button>
         <SyntaxHighlighter language={language} style={darcula}>
           {code}
         </SyntaxHighlighter>
       </div>
+
+      {/* Modal for zoomed code */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded shadow-lg w-3/4">
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded"
+            >
+              Close
+            </button>
+            <SyntaxHighlighter language={language} style={darcula}>
+              {code}
+            </SyntaxHighlighter>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
